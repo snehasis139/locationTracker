@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Location Tracker</title>
+</head>
+<body>
+  <a href="#" id="track-link">Click Me</a>
+  <p id="output"></p>
+
+  <script>
+    document.getElementById('track-link').addEventListener('click', (e) => {
+      e.preventDefault();
+
+      // Ask for user's permission to access location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Display location info
+            document.getElementById('output').textContent = `Latitude: ${latitude}, Longitude: ${longitude}`;
+
+            // Send data to the server
+            fetch('/log-location', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ latitude, longitude }),
+            });
+          },
+          (error) => {
+            document.getElementById('output').textContent = `Error: ${error.message}`;
+          }
+        );
+      } else {
+        document.getElementById('output').textContent = 'Geolocation is not supported by your browser.';
+      }
+    });
+  </script>
+</body>
+</html>
